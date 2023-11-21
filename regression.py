@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def generate_data(n, m, t):
     x_values = np.random.uniform(0, 100, n)
-    y_values = m * x_values + t + np.random.normal(0, 5, n)
+    y_values = m * x_values + t  # + np.random.normal(0, 5, 1)
 
     X = x_values.reshape(-1, 1)  # Reshaping to create a column vector
     Y = y_values.reshape(-1, 1)  # Reshaping to create a column vector
@@ -128,7 +128,7 @@ class model:
         plt.show()
 
 
-X, Y = generate_data(300, 2.5, 10)
+X, Y = generate_data(300, 5, 10)
 
 model = model(X, Y)
 
