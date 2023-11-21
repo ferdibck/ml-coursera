@@ -3,22 +3,20 @@ import matplotlib.pyplot as plt
 
 
 def generate_data(n, m, t):
-    x_values = np.random.uniform(0, 1000, n)
-    y_values = []
+    x_values = np.random.uniform(0, 100, n)
+    y_values = m * x_values + t + np.random.normal(0, t * 7.5, n)
 
-    for xi in x_values:
-        y = m * xi + t + np.random.normal(0, 3, n)
+    return x_values, y_values
 
-        y_values.append(y)
 
-    data = [x_values, y_values]
-
-    return data
+def plot_data(x, y):
+    plt.scatter(x, y)
+    plt.show()
 
 
 class model:
     def __init__(self):
-        self.w = 0
+        self.w = np.array([0])
         self.b = 0
 
     def predict_Y(self, X):
@@ -39,7 +37,13 @@ class model:
     def gradient_descent(self, alpha, epsilon):
         change = epsilon + 1
         while change > epsilon:
-            pass
+            cost_curr = self.calculate_cost()
+            cost_prev = cost_curr
+            w_temp = self.w - alpha * dJ_dw
+            b_temp = self.b - alpha * dJ_db
+
+            self.w = w_temp
+            self.b = b_temp
 
     def scale_feature(X):
         mean = np.mean(X)
