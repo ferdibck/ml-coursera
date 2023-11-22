@@ -32,6 +32,3 @@ class multiple_linear_regression:
         self.Y_train = Y_train
         self.Y_val = Y_val
         self.m = len(X_train)
-
-        self.w = np.zeros(self.m)
-        self.b = 0
