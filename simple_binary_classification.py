@@ -13,8 +13,8 @@ def vectorization(df):
 
     vectors = np.array(col_vectors)
 
-    X = vectors[1]
-    Y = vectors[0]
+    X = vectors[0]
+    Y = vectors[1]
 
     return X, Y
 
@@ -41,17 +41,26 @@ class simple_linear_regression:
     def predict_Y(self, X):
         z = self.w * X + self.b
 
-        S = 1 / (1 + np.exp(-z))
+        Y = 1 / (1 + np.exp(-z))
 
-        if S >= self.treshold:
-            return 1
-        else:
-            return 0
+        for y in Y:
+            if y > 0.5:
+                y = 1
+            else:
+                y = 0
+
+        return Y
 
     def calculate_cost(self):
         Y_pred = self.predict_Y(self.X_train)
 
-        J = 1 / (2 * self.m) * np.sum((Y_pred - self.Y_train) ** 2)
+        J = (
+            -1
+            / self.m
+            * np.sum(
+                self.Y_train * np.log(Y_pred) + (1 - self.Y_train) * np.log(1 - Y_pred)
+            )
+        )
 
         return J
 
@@ -97,8 +106,8 @@ class simple_linear_regression:
         for x, y, color, marker, label, linestyle in data_to_plot:
             plt.plot(x, y, marker=marker, color=color, label=label, linestyle=linestyle)
 
-        plt.ylabel("Annual salary ($)")
-        plt.xlabel("Experience (years)")
+        plt.ylabel("Category")
+        plt.xlabel("x")
         plt.legend()
         plt.show()
 
@@ -110,6 +119,6 @@ X, Y = vectorization(data)
 
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
 
-model = simple_linear_regression(X_train, Y_train)
+model = simple_linear_regression(X_train, Y_train, 0.5)
 model.gradient_descent(0.0001, 10 ** (-3))
 model.plot_model()
