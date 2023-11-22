@@ -14,7 +14,7 @@ def vectorization(df):
     vectors = np.array(col_vectors)
 
     X = vectors[1]
-    Y = vectors[0]
+    Y = vectors[2]
 
     return X, Y
 
@@ -51,7 +51,6 @@ class simple_linear_regression:
 
     def gradient_descent(self, alpha, treshold):
         J_change = treshold + 1
-
         while J_change > treshold:
             J_prev = self.calculate_cost()
 
@@ -64,14 +63,13 @@ class simple_linear_regression:
             self.b = b_temp
 
             J_curr = self.calculate_cost()
-
             J_change = J_prev - J_curr
 
     def compute_gradients(self):
         Y_pred = self.predict_Y(self.X_train)
 
         dJ_dw = 1 / self.m * np.sum((Y_pred - self.Y_train) * self.X_train)
-        dJ_db = 1 / self.m * np.sum((Y_pred - self.Y_train) ** 2)
+        dJ_db = 1 / self.m * np.sum((Y_pred - self.Y_train))
 
         return dJ_dw, dJ_db
 
@@ -105,5 +103,5 @@ X, Y = vectorization(data)
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
 
 model = simple_linear_regression(X_train, Y_train)
-model.gradient_descent(0.003, 10 ** (-3))
+model.gradient_descent(0.03, 10 ** (-3))
 model.plot_model()

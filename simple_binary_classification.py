@@ -103,7 +103,7 @@ class simple_linear_regression:
         plt.show()
 
 
-data_path = "Salary_dataset.csv"
+data_path = "gpt_dataset.csv"
 data = pd.read_csv(data_path)
 
 X, Y = vectorization(data)
