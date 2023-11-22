@@ -29,8 +29,12 @@ class simple_linear_regression:
         self.w = 0
         self.b = 0
 
-        self.X_train = X
-        self.Y_train = Y
+        X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
+
+        self.X_train = X_train
+        self.Y_train = Y_train
+        self.X_val = X_val
+        self.Y_val = Y_val
         self.m = len(X)
 
     def predict_Y(self, X):
@@ -78,8 +82,18 @@ class simple_linear_regression:
         x_values = np.linspace(min, max, 2)
         y_values = self.predict_Y(x_values)
 
-        plt.plot(self.X_train, self.Y_train, linestyle="", marker="x")
-        plt.plot(x_values, y_values)
+        data_to_plot = [
+            (self.X_train, self.Y_train, "red", "x", "training", ""),
+            (x_values, y_values, "blue", "", "model", "-"),
+            (self.X_val, self.Y_val, "green", "o", "validation", ""),
+        ]
+
+        for x, y, color, marker, label, linestyle in data_to_plot:
+            plt.plot(x, y, marker=marker, color=color, label=label, linestyle=linestyle)
+
+        plt.ylabel("Annual salary ($)")
+        plt.xlabel("Experience (years)")
+        plt.legend()
         plt.show()
 
 
@@ -88,14 +102,8 @@ data = pd.read_csv(data_path)
 
 X, Y = vectorization(data)
 
-X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2, random_state=42)
+X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
 
 model = simple_linear_regression(X_train, Y_train)
 model.gradient_descent(0.0001, 10 ** (-3))
 model.plot_model()
-
-Y_pred = model.predict_Y(X_val)
-
-plt.plot(X_val, Y_val, marker="x", linestyle="", color="red")
-plt.plot(X_val, Y_pred, color="blue")
-plt.show()
