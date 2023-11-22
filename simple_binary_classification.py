@@ -25,7 +25,7 @@ def plot_data(X, Y):
 
 
 class simple_linear_regression:
-    def __init__(self, X, Y) -> None:
+    def __init__(self, X, Y, treshold) -> None:
         self.w = 0
         self.b = 0
 
@@ -36,11 +36,17 @@ class simple_linear_regression:
         self.X_val = X_val
         self.Y_val = Y_val
         self.m = len(X)
+        self.treshold = treshold
 
     def predict_Y(self, X):
-        Y = self.w * X + self.b
+        z = self.w * X + self.b
 
-        return Y
+        S = 1 / (1 + np.exp(-z))
+
+        if S >= self.treshold:
+            return 1
+        else:
+            return 0
 
     def calculate_cost(self):
         Y_pred = self.predict_Y(self.X_train)
@@ -49,10 +55,10 @@ class simple_linear_regression:
 
         return J
 
-    def gradient_descent(self, alpha, treshold):
-        J_change = treshold + 1
+    def gradient_descent(self, alpha, treshhold):
+        J_change = treshhold + 1
 
-        while J_change > treshold:
+        while J_change > treshhold:
             J_prev = self.calculate_cost()
 
             dJ_dw, dJ_db = self.compute_gradients()
@@ -105,5 +111,5 @@ X, Y = vectorization(data)
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
 
 model = simple_linear_regression(X_train, Y_train)
-model.gradient_descent(0.003, 10 ** (-3))
+model.gradient_descent(0.0001, 10 ** (-3))
 model.plot_model()
