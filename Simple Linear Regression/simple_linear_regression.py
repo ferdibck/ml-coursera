@@ -25,10 +25,7 @@ def plot_data(X, Y):
 
 
 class simple_linear_regression:
-    def __init__(self, X, Y) -> None:
-        self.w = 0
-        self.b = 0
-
+    def __init__(self, X, Y):
         X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
 
         self.X_train = X_train
@@ -36,6 +33,9 @@ class simple_linear_regression:
         self.X_val = X_val
         self.Y_val = Y_val
         self.m = len(X)
+
+        self.w = 0
+        self.b = 0
 
     def predict_Y(self, X):
         Y = self.w * X + self.b
