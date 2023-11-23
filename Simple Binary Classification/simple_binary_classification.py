@@ -39,9 +39,9 @@ class simple_binary_classification:
         self.treshold = treshold
 
     def predict_Y(self, X):
-        z = self.w * X + self.b
+        Z = self.w * X + self.b
 
-        Y = 1 / (1 + np.exp(-z))
+        Y = 1 / (1 + np.exp(-Z))
 
         return Y
 
@@ -68,15 +68,11 @@ class simple_binary_classification:
             self.w = w_temp
             self.b = b_temp
 
-            J_curr = self.calculate_cost()
-            print(J_curr)
-
-    # Gradients aren't computed correctly
     def compute_gradients(self):
         Y_pred = self.predict_Y(self.X_train)
 
         dJ_dw = 1 / self.m * np.sum((Y_pred - self.Y_train) * self.X_train)
-        dJ_db = 1 / self.m * np.sum((Y_pred - self.Y_train) ** 2)
+        dJ_db = 1 / self.m * np.sum((Y_pred - self.Y_train))
 
         return dJ_dw, dJ_db
 
@@ -85,8 +81,7 @@ class simple_binary_classification:
         min = np.min(self.X_train)
 
         x_values = np.linspace(min, max, 100)
-        z = self.w * x_values + self.b
-        y_values = 1 / (1 + np.exp(-z))
+        y_values = self.predict_Y(x_values)
 
         data_to_plot = [
             (self.X_train, self.Y_train, "red", "x", "training", ""),
@@ -111,5 +106,5 @@ X, Y = vectorization(data)
 X_train, X_val, Y_train, Y_val = train_test_split(X, Y, test_size=0.2)
 
 model = simple_binary_classification(X_train, Y_train, 0.5)
-model.gradient_descent(0.01, 100)
+model.gradient_descent(1, 10000)
 model.plot_model()
