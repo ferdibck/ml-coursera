@@ -14,7 +14,7 @@ class neural_network:
         self.first_layer.init_model(self.input_size)
 
     def inference(self, X):
-        self.first_layer.inference(X)
+        return self.first_layer.inference(X)
 
 
 class layer_element(ABC):
@@ -63,12 +63,14 @@ class layer(layer_element):
             self.units[i] = unit(self.input_size)
 
     def inference(self, X):
-        activation_vector = np.array(self.size)
+        activation_vector = np.empty(self.size)
         for i in range(self.size):
             activation_i = self.units[i].compute_activation(X)
             activation_vector[i] = activation_i
 
-        self.next_layer.inference(activation_vector)
+        output = self.next_layer.inference(activation_vector)
+
+        return output
 
 
 class output_layer(layer_element):
@@ -81,12 +83,14 @@ class output_layer(layer_element):
     def init_model(self, input_size):
         self.input_size = input_size
 
+        self.init_unit()
+
     def init_unit(self):
         self.units[0] = unit(self.input_size)
 
     def inference(self, X):
-        activation = self.units[0].compute_activation(X)
-        return activation
+        output = self.units[0].compute_activation(X)
+        return output
 
 
 class unit:
@@ -94,8 +98,9 @@ class unit:
         self.weights = np.zeros(input_size)
         self.bias = 0
 
-    def compute_activation(self, input):
-        return 1 / (1 + np.exp(-(np.dot(self.weights, input) + self.bias)))
+    def compute_activation(self, X):
+        Y = 1 / (1 + np.exp(-(np.dot(self.weights, X) + self.bias)))
+        return Y
 
 
 model = neural_network(2)
