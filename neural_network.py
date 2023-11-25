@@ -88,8 +88,8 @@ class output_layer(layer_element):
     def init_unit(self):
         self.units[0] = unit(self.input_size)
 
-    def inference(self, X):
-        output = self.units[0].compute_activation(X)
+    def inference(self, input):
+        output = self.units[0].compute_activation(input)
         return output
 
 
