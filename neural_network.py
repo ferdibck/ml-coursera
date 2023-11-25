@@ -42,11 +42,9 @@ class layer_element(ABC):
 class layer(layer_element):
     def __init__(self, no_units, next_layer):
         self.size = no_units
-        self.units = np.array(no_units, dtype=object)
+        self.units = np.empty(no_units, dtype=object)
 
         self.next_layer = next_layer
-
-        return self
 
     def add_layer(self, no_units):
         self.next_layer = self.next_layer.add_layer(no_units)
@@ -70,12 +68,12 @@ class layer(layer_element):
             activation_i = self.units[i].compute_activation(X)
             activation_vector[i] = activation_i
 
-        self.next_layer.inference(X)
+        self.next_layer.inference(activation_vector)
 
 
 class output_layer(layer_element):
     def __init__(self):
-        self.units = np.array(1)
+        self.units = np.empty([1], dtype=object)
 
     def add_layer(self, no_units):
         return layer(no_units, self)
@@ -98,3 +96,9 @@ class unit:
 
     def compute_activation(self, input):
         return 1 / (1 + np.exp(-(np.dot(self.weights, input) + self.bias)))
+
+
+model = neural_network(2)
+model.add_layer(2)
+model.init_model()
+print(model.inference([1, 1]))
