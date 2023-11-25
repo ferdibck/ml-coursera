@@ -66,6 +66,7 @@ class layer(layer_element):
         activation_vector = np.empty(self.size)
         for i in range(self.size):
             activation_i = self.units[i].compute_activation(X)
+            print(activation_i)
             activation_vector[i] = activation_i
 
         output = self.next_layer.inference(activation_vector)
@@ -99,11 +100,12 @@ class unit:
         self.bias = 0
 
     def compute_activation(self, X):
-        Y = 1 / (1 + np.exp(-(np.dot(self.weights, X) + self.bias)))
+        Z = np.dot(self.weights, X) + self.bias
+        Y = 1 / (1 + np.exp(-Z))
         return Y
 
 
 model = neural_network(2)
 model.add_layer(2)
 model.init_model()
-print(model.inference([0, 0]))
+print(model.inference([100, 100]))
