@@ -66,7 +66,6 @@ class layer(layer_element):
         activation_vector = np.empty(self.size)
         for i in range(self.size):
             activation_i = self.units[i].compute_activation(X)
-            print(activation_i)
             activation_vector[i] = activation_i
 
         output = self.next_layer.inference(activation_vector)
