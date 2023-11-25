@@ -106,4 +106,4 @@ class unit:
 model = neural_network(2)
 model.add_layer(2)
 model.init_model()
-print(model.inference([1, 1]))
+print(model.inference([0, 0]))
