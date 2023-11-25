@@ -13,6 +13,9 @@ class neural_network:
     def init_model(self):
         self.first_layer.init_model(self.input_size)
 
+    def inference(self, X):
+        self.first_layer.inference(X)
+
 
 class layer_element(ABC):
     @abstractmethod
@@ -25,6 +28,14 @@ class layer_element(ABC):
 
     @abstractmethod
     def init_model(self):
+        pass
+
+    @abstractmethod
+    def init_unit(self):
+        pass
+
+    @abstractmethod
+    def inference(self):
         pass
 
 
@@ -53,6 +64,14 @@ class layer(layer_element):
         for i in range(self.size):
             self.units[i] = unit(self.input_size)
 
+    def inference(self, X):
+        activation_vector = np.array(self.size)
+        for i in range(self.size):
+            activation_i = self.units[i].compute_activation(X)
+            activation_vector[i] = activation_i
+
+        self.next_layer.inference(X)
+
 
 class output_layer(layer_element):
     def __init__(self):
@@ -66,6 +85,10 @@ class output_layer(layer_element):
 
     def init_unit(self):
         self.units[0] = unit(self.input_size)
+
+    def inference(self, X):
+        activation = self.units[0].compute_activation(X)
+        return activation
 
 
 class unit:
