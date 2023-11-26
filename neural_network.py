@@ -3,8 +3,8 @@ from abc import ABC, abstractmethod
 
 
 class neural_network:
-    def __init__(self, input_size):
-        self.first_layer = output_layer()
+    def __init__(self, input_size, output_size):
+        self.first_layer = output_layer(output_size)
         self.input_size = input_size
 
     def add_layer(self, no_units):
@@ -31,7 +31,7 @@ class layer_element(ABC):
         pass
 
     @abstractmethod
-    def init_unit(self):
+    def init_units(self):
         pass
 
     @abstractmethod
@@ -54,11 +54,11 @@ class layer(layer_element):
     def init_model(self, input_size):
         self.input_size = input_size
 
-        self.init_unit()
+        self.init_units()
 
         self.next_layer.init_model(self.size)
 
-    def init_unit(self):
+    def init_units(self):
         for i in range(self.size):
             self.units[i] = unit(self.input_size)
 
@@ -74,8 +74,9 @@ class layer(layer_element):
 
 
 class output_layer(layer_element):
-    def __init__(self):
-        self.units = np.empty([1], dtype=object)
+    def __init__(self, no_units):
+        self.size = no_units
+        self.units = np.empty(no_units, dtype=object)
 
     def add_layer(self, no_units):
         return layer(no_units, self)
@@ -83,19 +84,25 @@ class output_layer(layer_element):
     def init_model(self, input_size):
         self.input_size = input_size
 
-        self.init_unit()
+        self.init_units()
 
-    def init_unit(self):
-        self.units[0] = unit(self.input_size)
+    def init_units(self):
+        for i in range(self.size):
+            self.units[i] = unit(self.input_size)
 
-    def inference(self, input):
-        output = self.units[0].compute_activation(input)
-        return output
+    def inference(self, X):
+        activation_vector = np.empty(self.size)
+        for i in range(self.size):
+            activation_i = self.units[i].compute_activation(X)
+            activation_vector[i] = activation_i
+
+        return activation_vector
 
 
 class unit:
     def __init__(self, input_size):
-        self.weights = np.zeros(input_size)
+        # self.weights = np.zeros(input_size)
+        self.weights = np.random.rand(input_size)
         self.bias = 0
 
     def compute_activation(self, X):
@@ -104,7 +111,7 @@ class unit:
         return Y
 
 
-model = neural_network(2)
+model = neural_network(2, 3)
 model.add_layer(2)
 model.init_model()
 print(model.inference([100, 100]))
