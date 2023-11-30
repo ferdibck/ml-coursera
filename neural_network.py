@@ -16,6 +16,21 @@ class neural_network:
     def inference(self, X):
         return self.first_layer.inference(X)
 
+    def compute_cost(self, Xs, Y):
+        cost = 0
+
+        for i, X in enumerate(Xs):
+            Y_pred = self.inference(X)
+            cost += Y[i] * np.log(Y_pred) + (1 - Y[i]) * np.log(1 - Y_pred)
+
+        cost /= -(len(Y))
+
+        return cost
+
+    def train(self, Xs_train, Ys_train, learning_rate, num_epochs):
+        for epoch in range(num_epochs):
+            pass
+
 
 class layer_element(ABC):
     @abstractmethod
