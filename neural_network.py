@@ -31,6 +31,11 @@ class neural_network:
         for epoch in range(num_epochs):
             pass
 
+    def backpropagation(self, y_pred, y):
+        loss = -y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred)
+
+        # self.first_layer.backpropagation()
+
 
 class layer_element(ABC):
     @abstractmethod
