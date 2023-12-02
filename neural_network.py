@@ -34,7 +34,7 @@ class neural_network:
     def backpropagation(self, y_pred, y):
         loss = -y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred)
 
-        # self.first_layer.backpropagation()
+        self.first_layer.backpropagation()
 
 
 class layer_element(ABC):
@@ -56,6 +56,10 @@ class layer_element(ABC):
 
     @abstractmethod
     def inference(self):
+        pass
+
+    @abstractmethod
+    def backpropagation(self):
         pass
 
 
@@ -92,6 +96,9 @@ class layer(layer_element):
 
         return output
 
+    def backpropagation(self):
+        pass
+
 
 class output_layer(layer_element):
     def __init__(self, no_units):
@@ -118,6 +125,9 @@ class output_layer(layer_element):
 
         return activation_vector
 
+    def backpropagation(self):
+        pass
+
 
 class unit:
     def __init__(self, input_size):
@@ -128,6 +138,7 @@ class unit:
     def compute_activation(self, X):
         Z = np.dot(self.weights, X) + self.bias
         Y = 1 / (1 + np.exp(-Z))
+        self.last_a = Y
         return Y
 
 

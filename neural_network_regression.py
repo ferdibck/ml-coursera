@@ -32,9 +32,9 @@ class neural_network:
             pass
 
     def backpropagation(self, y_pred, y):
-        loss = -y * np.log(y_pred) + (1 - y) * np.log(1 - y_pred)
+        loss = (y_pred - y) ** 2
 
-        self.first_layer.backpropagation()
+        self.first_layer.backpropagation(loss)
 
 
 class layer_element(ABC):
@@ -92,12 +92,14 @@ class layer(layer_element):
             activation_i = self.units[i].compute_activation(X)
             activation_vector[i] = activation_i
 
+        self.last_a = activation_vector
+
         output = self.next_layer.inference(activation_vector)
 
         return output
 
-    def backpropagation(self):
-        pass
+    def backpropagation(self, loss):
+        derivative = self.next_layer.backpropagation(loss)
 
 
 class output_layer(layer_element):
@@ -125,21 +127,33 @@ class output_layer(layer_element):
 
         return activation_vector
 
+    def backpropagation(self, loss):
+        for i in range(self.size):
+            self.units[i].backpropagation(loss)
+
 
 class unit:
     def __init__(self, input_size):
         # self.weights = np.zeros(input_size)
+        self.input_size = input_size
         self.weights = np.random.rand(input_size)
         self.bias = 0
 
     def compute_activation(self, X):
         Z = np.dot(self.weights, X) + self.bias
-        Y = 1 / (1 + np.exp(-Z))
+        Y = self.ReLU(Z)
         self.last_a = Y
         return Y
 
+    def ReLU(self, Z):
+        max(0, Z)
 
-model = neural_network(2, 3)
+    def backpropagation(self, loss):
+        dj_dw = np.empty(self.input_size)
+        pass
+
+
+model = neural_network(2, 1)
 model.add_layer(2)
 model.init_model()
-print(model.inference([100, 100]))
+print(model.inference([10, 5]))
