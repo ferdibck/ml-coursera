@@ -1,5 +1,4 @@
-import neural_network as nn
+test2 = (5, 6)
+test = (1, test2)
 
-model = nn.neural_network(2)
-
-print(model.inference([1, 1]))
+print(test)
