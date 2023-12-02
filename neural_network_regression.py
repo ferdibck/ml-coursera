@@ -98,8 +98,8 @@ class layer(layer_element):
 
         return output
 
-    def backpropagation(self, loss):
-        derivative = self.next_layer.backpropagation(loss)
+    def backpropagation(self, loss, learning_rate):
+        pass
 
 
 class output_layer(layer_element):
@@ -127,9 +127,9 @@ class output_layer(layer_element):
 
         return activation_vector
 
-    def backpropagation(self, loss):
+    def backpropagation(self, loss, learning_rate):
         for i in range(self.size):
-            self.units[i].backpropagation(loss)
+            self.units[i].backpropagation(loss, learning_rate)
 
 
 class unit:
@@ -140,6 +140,7 @@ class unit:
         self.bias = 0
 
     def compute_activation(self, X):
+        self.last_X = X
         Z = np.dot(self.weights, X) + self.bias
         Y = self.ReLU(Z)
         self.last_a = Y
@@ -148,9 +149,23 @@ class unit:
     def ReLU(self, Z):
         max(0, Z)
 
-    def backpropagation(self, loss):
-        dj_dw = np.empty(self.input_size)
-        pass
+    def backpropagation(self, loss, learning_rate):
+        dj_dg = 2 * (self.last_a - loss)
+        dg_dz = 1 if self.last_a > 0 else 0
+
+        dz_dw = self.last_X
+        dz_db = 1
+
+        dj_dw = dj_dg * dg_dz * dz_dw
+        dj_db = dj_dg * dg_dz * dz_db
+
+        self.gradient_descent(dj_dw, dj_db, learning_rate)
+
+        return (dj_dg, dj_dz)
+
+    def gradient_descent(self, dj_dw, dj_db, learning_rate):
+        self.weights -= learning_rate * dj_dw
+        self.bias -= learning_rate * dj_db
 
 
 model = neural_network(2, 1)
