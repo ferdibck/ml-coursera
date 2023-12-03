@@ -31,10 +31,11 @@ class neural_network:
         for epoch in range(num_epochs):
             pass
 
-    def backpropagation(self, y_pred, y):
-        loss = (y_pred - y) ** 2
+    def backpropagation(self, y_pred, y, learning_rate):
+        loss = 1 / 2 * (y_pred - y) ** 2
+        dl_da = y_pred - y
 
-        self.first_layer.backpropagation(loss)
+        self.first_layer.backpropagation(dl_da, learning_rate)
 
 
 class layer_element(ABC):
@@ -98,8 +99,12 @@ class layer(layer_element):
 
         return output
 
-    def backpropagation(self, loss, learning_rate):
-        pass
+    def backpropagation(self, dl_dprev, learning_rate):
+        da_dz = np.where(self.last_a > 0, 1, 0)
+        dl_dprev *= da_dz
+
+        for i in range(self.size):
+            self.units[i].backpropagation(dl_dprev[i], learning_rate)
 
 
 class output_layer(layer_element):
@@ -125,11 +130,18 @@ class output_layer(layer_element):
             activation_i = self.units[i].compute_activation(X)
             activation_vector[i] = activation_i
 
+        self.last_a = activation_vector
+
         return activation_vector
 
-    def backpropagation(self, loss, learning_rate):
+    def backpropagation(self, dl_da, learning_rate):
+        da_dz = np.where(self.last_a > 0, 1, 0)
+        dl_prev = dl_da * da_dz
+
         for i in range(self.size):
-            self.units[i].backpropagation(loss, learning_rate)
+            self.units[i].backpropagation(dl_prev[i], learning_rate)
+
+        return dl_prev
 
 
 class unit:
@@ -147,25 +159,20 @@ class unit:
         return Y
 
     def ReLU(self, Z):
-        max(0, Z)
+        return max(0, Z)
 
-    def backpropagation(self, loss, learning_rate):
-        dj_dg = 2 * (self.last_a - loss)
-        dg_dz = 1 if self.last_a > 0 else 0
-
+    def backpropagation(self, dl_prev, learning_rate):
         dz_dw = self.last_X
         dz_db = 1
 
-        dj_dw = dj_dg * dg_dz * dz_dw
-        dj_db = dj_dg * dg_dz * dz_db
+        dl_dw = dl_prev * dz_dw
+        dl_db = dl_prev * dz_db
 
-        self.gradient_descent(dj_dw, dj_db, learning_rate)
+        self.gradient_descent(dl_dw, dl_db, learning_rate)
 
-        return (dj_dg, dj_dz)
-
-    def gradient_descent(self, dj_dw, dj_db, learning_rate):
-        self.weights -= learning_rate * dj_dw
-        self.bias -= learning_rate * dj_db
+    def gradient_descent(self, dl_dw, dl_db, learning_rate):
+        self.weights -= learning_rate * dl_dw
+        self.bias -= learning_rate * dl_db
 
 
 model = neural_network(2, 1)
