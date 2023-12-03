@@ -19,25 +19,18 @@ class neural_network:
     def inference(self, X):
         return self.first_layer.inference(X)
 
-    def compute_loss(self, X, Y):
-        loss = 0
-
-        for in range
-
-        return cost
-
     def train(self, X_train, Y_train, learning_rate, num_epochs):
-        batch_size = len(X_train)/num_epochs
+        batch_size = len(X_train) / num_epochs
 
         for epoch in range(num_epochs):
             total_loss = 0
             y_preds = []
             for i in range(len(X_train)):
                 y_pred = self.inference(X[i])
-                total_loss += (y_pred-Y[i])**2
+                total_loss += (y_pred - Y[i]) ** 2
                 y_preds.append(y_pred)
 
-            total_loss *= 1/(2 * len(Y_train))
+            total_loss *= 1 / (2 * len(Y_train))
 
             print(f"Loss {epoch}: ", total_loss)
 
@@ -49,10 +42,6 @@ class neural_network:
 
         self.first_layer.backpropagation(dl_da, learning_rate)
 
-    def backpropagation2(self, X_train, Y_train, y_preds, learning_rate):
-        dl_da = 1/len(Y) * np.sum((y_preds-Y_train)**2)
-
-        self.first_layer.backpropagation2(dl_da, learning_rate)
 
 class layer_element(ABC):
     @abstractmethod
@@ -165,7 +154,7 @@ class unit:
     def __init__(self, input_size):
         # self.weights = np.zeros(input_size)
         self.input_size = input_size
-        self.weights = np.zeros(input_size)
+        self.weights = np.random.rand(input_size)
         self.bias = 0
 
     def compute_activation(self, X):
@@ -202,8 +191,6 @@ def vectorization(df):
     X = X.to_numpy()
     Y = Y.to_numpy()
 
-    print(X)
-
     return X, Y
 
 
@@ -224,10 +211,17 @@ model.add_layer(15)
 model.add_layer(5)
 model.init_model()
 
-for _ in range(1):
+for i in range(10):
+    print(i)
+    loss = 0
     for i in range(len(X)):
         y_pred = model.inference(X[i, :])
-        model.backpropagation(y_pred, Y[i], 0.0001)
+        model.backpropagation(y_pred, Y[i], 6 * 10 ** (-7))
+
+        loss += (y_pred - Y[i]) ** 2
+        loss /= len(Y) * 2
+
+    print(loss)
 
 for i in range(len(X)):
     y_pred = model.inference(X[i])
