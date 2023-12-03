@@ -1,6 +1,9 @@
 import numpy as np
 from abc import ABC, abstractmethod
 
+import matplotlib.pyplot as plt
+import pandas as pd
+
 
 class neural_network:
     def __init__(self, input_size, output_size):
@@ -16,20 +19,29 @@ class neural_network:
     def inference(self, X):
         return self.first_layer.inference(X)
 
-    def compute_cost(self, Xs, Y):
-        cost = 0
+    def compute_loss(self, X, Y):
+        loss = 0
 
-        for i, X in enumerate(Xs):
-            Y_pred = self.inference(X)
-            cost += Y[i] * np.log(Y_pred) + (1 - Y[i]) * np.log(1 - Y_pred)
-
-        cost /= -(len(Y))
+        for in range
 
         return cost
 
-    def train(self, Xs_train, Ys_train, learning_rate, num_epochs):
+    def train(self, X_train, Y_train, learning_rate, num_epochs):
+        batch_size = len(X_train)/num_epochs
+
         for epoch in range(num_epochs):
-            pass
+            total_loss = 0
+            y_preds = []
+            for i in range(len(X_train)):
+                y_pred = self.inference(X[i])
+                total_loss += (y_pred-Y[i])**2
+                y_preds.append(y_pred)
+
+            total_loss *= 1/(2 * len(Y_train))
+
+            print(f"Loss {epoch}: ", total_loss)
+
+            self.backpropagation2(X_train, Y_train, y_preds, learning_rate)
 
     def backpropagation(self, y_pred, y, learning_rate):
         loss = 1 / 2 * (y_pred - y) ** 2
@@ -37,6 +49,10 @@ class neural_network:
 
         self.first_layer.backpropagation(dl_da, learning_rate)
 
+    def backpropagation2(self, X_train, Y_train, y_preds, learning_rate):
+        dl_da = 1/len(Y) * np.sum((y_preds-Y_train)**2)
+
+        self.first_layer.backpropagation2(dl_da, learning_rate)
 
 class layer_element(ABC):
     @abstractmethod
@@ -101,6 +117,7 @@ class layer(layer_element):
 
     def backpropagation(self, dl_dprev, learning_rate):
         da_dz = np.where(self.last_a > 0, 1, 0)
+        dl_dprev = np.full(len(da_dz), dl_dprev)
         dl_dprev *= da_dz
 
         for i in range(self.size):
@@ -148,18 +165,18 @@ class unit:
     def __init__(self, input_size):
         # self.weights = np.zeros(input_size)
         self.input_size = input_size
-        self.weights = np.random.rand(input_size)
+        self.weights = np.zeros(input_size)
         self.bias = 0
 
     def compute_activation(self, X):
         self.last_X = X
-        Z = np.dot(self.weights, X) + self.bias
+        Z = np.dot(self.weights, X.reshape(-1, 1)) + self.bias
         Y = self.ReLU(Z)
         self.last_a = Y
         return Y
 
     def ReLU(self, Z):
-        return max(0, Z)
+        return np.maximum(0, Z)
 
     def backpropagation(self, dl_prev, learning_rate):
         dz_dw = self.last_X
@@ -174,8 +191,45 @@ class unit:
         self.weights -= learning_rate * dl_dw
         self.bias -= learning_rate * dl_db
 
+        # print("New bias", self.bias)
+        # print("New weights", self.weights)
 
-model = neural_network(2, 1)
-model.add_layer(2)
+
+def vectorization(df):
+    X = df.drop(["Performance Index", "Extracurricular Activities"], axis=1)
+    Y = df["Performance Index"]
+
+    X = X.to_numpy()
+    Y = Y.to_numpy()
+
+    print(X)
+
+    return X, Y
+
+
+def plot_data(X, Y, y_pred):
+    plt.plot(X, Y, marker="x", linestyle="")
+    plt.plot(X, y_pred, marker="o", color="red", linestyle="-")
+    plt.show()
+
+
+data_path = "Student_performance.csv"
+data = pd.read_csv(data_path)
+
+X, Y = vectorization(data)
+
+model = neural_network(4, 1)
+model.add_layer(25)
+model.add_layer(15)
+model.add_layer(5)
 model.init_model()
-print(model.inference([10, 5]))
+
+for _ in range(1):
+    for i in range(len(X)):
+        y_pred = model.inference(X[i, :])
+        model.backpropagation(y_pred, Y[i], 0.0001)
+
+for i in range(len(X)):
+    y_pred = model.inference(X[i])
+
+    print(X[i], Y[i], y_pred)
