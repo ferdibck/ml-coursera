@@ -206,9 +206,9 @@ data = pd.read_csv(data_path)
 X, Y = vectorization(data)
 
 model = neural_network(4, 1)
-model.add_layer(25)
-model.add_layer(15)
-model.add_layer(5)
+model.add_layer(16)
+model.add_layer(8)
+model.add_layer(10)
 model.init_model()
 
 for i in range(10):
@@ -216,10 +216,10 @@ for i in range(10):
     loss = 0
     for i in range(len(X)):
         y_pred = model.inference(X[i, :])
-        model.backpropagation(y_pred, Y[i], 6 * 10 ** (-7))
+        model.backpropagation(y_pred, Y[i], 1 * 10 ** (-9))
 
-        loss += (y_pred - Y[i]) ** 2
-        loss /= len(Y) * 2
+        loss += abs(y_pred - Y[i])
+        loss /= len(Y)
 
     print(loss)
 
